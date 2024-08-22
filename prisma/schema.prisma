@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model country_codes {
+  country_code String    @id @db.VarChar(2)
+  country_name String    @unique @db.VarChar(55)
+  leagues      leagues[]
+}
+
+model leagues {
+  league_id     String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  league_name   String         @unique @db.VarChar(55)
+  country_code  String?        @db.VarChar(2)
+  country_codes country_codes? @relation(fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction)
+  teams         teams[]
+}
+
+model matches {
+  match_id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  match_date                     DateTime @db.Timestamp(6)
+  home_score                     Int
+  away_score                     Int
+  home_team                      String?  @db.Uuid
+  away_team                      String?  @db.Uuid
+  teams_matches_away_teamToteams teams?   @relation("matches_away_teamToteams", fields: [away_team], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
+  teams_matches_home_teamToteams teams?   @relation("matches_home_teamToteams", fields: [home_team], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model teams {
+  team_id                          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  league_id                        String?   @db.Uuid
+  matches_matches_away_teamToteams matches[] @relation("matches_away_teamToteams")
+  matches_matches_home_teamToteams matches[] @relation("matches_home_teamToteams")
+  leagues                          leagues?  @relation(fields: [league_id], references: [league_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  user_id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_email    String @unique @db.VarChar(255)
+  user_password String @db.VarChar(128)
+}
