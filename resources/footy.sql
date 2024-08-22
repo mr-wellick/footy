@@ -3,6 +3,7 @@
 -- 3. https://stackoverflow.com/questions/42193716/datatype-for-country-in-mysql
 -- 4. https://sql.toad.cz/?keyword=default
 -- 5. https://stackoverflow.com/questions/51463706/can-somebody-give-a-practical-example-of-a-many-to-many-relationship
+-- 6. Reference OWASP documentation
 
 -- Note: look at uuid postgres docs
 
@@ -58,3 +59,46 @@ create table if not exists matches(
     away_team uuid references teams(team_id)
 )
 select * from matches;
+
+-- TODO
+-- players table
+-- note, we will be storing player stats for multiple seasons
+-- how to query for season 2003-200?
+-- can query for a single player stats across x years
+-- can query for an entire team's stats for x years
+--create table players(
+--    player_id int primary key,
+--    name text,
+--)
+--
+--create table statistics(
+--    stat_id int primary key,
+--    player_id references players(player_id),
+--    team_id int references teams(team_id),
+--    from text,
+--    to text,
+--    pos text,
+--    age int,
+--    ht int,
+--    wt int,
+--    nat text,
+--    app int ,
+--    sub int,
+--    g int,
+--    a int,
+--    sh int,
+--    st int,
+--    fc int,
+--    fa int,
+--    yc int,
+--    rc int,
+--)
+
+-- favorites table
+-- link table aka association table. Example of a User and Favourite sounds like M:M relationship.
+--create table if not exists favorites(
+--    favorite_id integer primary key,
+--    user_id uuid references users(user_id),
+--    team_id integer references teams(team_id)
+--)
+
