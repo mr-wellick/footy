@@ -1,16 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { Hono } from "hono";
-
-const prisma = new PrismaClient();
+import prisma from "../db";
 const app = new Hono();
 
 app.get("/countries", async (c) => {
-  const countries = await prisma.country_codes.create({
-    data: {
-      country_code: "",
-      country_name: "",
-    },
-  });
+  const countries = await prisma.country_codes.findMany();
   return c.json(countries, 200);
 });
 
