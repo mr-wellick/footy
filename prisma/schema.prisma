@@ -8,7 +8,7 @@ datasource db {
 }
 
 model country_codes {
-  country_code String    @id @db.VarChar(2)
+  country_code String    @id @db.VarChar(3)
   country_name String    @unique @db.VarChar(55)
   leagues      leagues[]
 }
@@ -16,7 +16,7 @@ model country_codes {
 model leagues {
   league_id     String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   league_name   String         @unique @db.VarChar(55)
-  country_code  String?        @db.VarChar(2)
+  country_code  String?        @db.VarChar(3)
   country_codes country_codes? @relation(fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction)
   teams         teams[]
 }
