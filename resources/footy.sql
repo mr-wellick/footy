@@ -190,7 +190,16 @@ alter table leagues add constraint leagues_country_code_fkey foreign key (countr
 select * from leagues;
 
 
+-- add new column to leagues table
+select * from leagues;
 
+begin;
+	alter table leagues add column league_division integer not null;
+rollback;
 
+alter table leagues add column league_division integer not null;
 
-
+-- add new column to teams table
+begin;
+    alter table teams add column team_name varchar(55) not null;
+rollback;
