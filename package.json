@@ -1,7 +1,7 @@
 {
   "name": "footy",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.tsx"
   },
   "dependencies": {
     "@hono/node-server": "^1.12.1",
