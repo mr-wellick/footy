@@ -14,11 +14,12 @@ model country_codes {
 }
 
 model leagues {
-  league_id     String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  league_name   String         @unique @db.VarChar(55)
-  country_code  String?        @db.VarChar(3)
-  country_codes country_codes? @relation(fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction)
-  teams         teams[]
+  league_id       String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  league_name     String         @unique @db.VarChar(55)
+  country_code    String?        @db.VarChar(3)
+  league_division Int
+  country_codes   country_codes? @relation(fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction)
+  teams           teams[]
 }
 
 model matches {
@@ -35,6 +36,7 @@ model matches {
 model teams {
   team_id                          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   league_id                        String?   @db.Uuid
+  team_name                        String    @db.VarChar(55)
   matches_matches_away_teamToteams matches[] @relation("matches_away_teamToteams")
   matches_matches_home_teamToteams matches[] @relation("matches_home_teamToteams")
   leagues                          leagues?  @relation(fields: [league_id], references: [league_id], onDelete: NoAction, onUpdate: NoAction)

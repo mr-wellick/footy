@@ -1,5 +1,6 @@
 import type { FC } from "hono/jsx";
 import Navbar from "../components/navbar";
+import Leagues from "../services/leagues/view";
 
 const Layout: FC = () => {
   return (
@@ -12,9 +13,7 @@ const Layout: FC = () => {
       </head>
       <body>
         <Navbar />
-        <div hx-get="/api/v1/leagues" hx-trigger="load">
-          <span class="loading loading-ring loading-lg htmx-indicator"></span>
-        </div>
+        <Leagues />
       </body>
       <script
         src="https://unpkg.com/htmx.org@1.9.10"
