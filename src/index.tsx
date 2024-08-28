@@ -10,8 +10,8 @@ const port = 3000;
 
 app.use("/src/public/*", serveStatic({ root: "./" }));
 
-app.get("/", (c) => c.html(html`<!doctype html>${(<Layout />)}`));
-app.route("/leagues", leagues);
+app.get("/", (c) => c.html(html`<!DOCTYPE html>${(<Layout />)}`));
+app.route("api/v1/leagues", leagues);
 
 console.log(`Server is running on port ${port}`);
 
