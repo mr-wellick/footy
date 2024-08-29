@@ -48,3 +48,17 @@ league_metadata = tibble(
 
 # only consider obs that have league
 league_metadata %>% filter(is.na(col_three) & is.na(col_four), !is.na(country_name))
+
+
+####################################################################
+
+# retrieve html page for each URL in leagues
+teams = sapply(league_metadata$leagues, function(league_url){ read_html(league_url) })
+
+
+# need to figure out a way to process this 
+# in batches to avoid HTTP Status Code 503 (service unavailabe)
+sapply(league_metadata$leagues, function(league_url){ league_url })
+
+
+
