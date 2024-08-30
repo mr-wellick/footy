@@ -4,6 +4,7 @@ library(dplyr)
 library(stringr)
 library(tidyr)
 library(countrycode)
+library(httr)
 
 # urls
 base_url = "https://www.espn.com"
@@ -49,16 +50,60 @@ league_metadata = tibble(
 # only consider obs that have league
 league_metadata %>% filter(is.na(col_three) & is.na(col_four), !is.na(country_name))
 
+# split(league_metadata, ceiling(seq(nrow(league_metadata))/30))
+
 
 ####################################################################
 
-# retrieve html page for each URL in leagues
-teams = sapply(league_metadata$leagues, function(league_url){ read_html(league_url) })
+# error handling to avoid 503 status code
+teams = sapply(league_metadata$leagues, function(url) {
+    result = scrape_url(url)
+    Sys.sleep(runif(1, min = 3, max = 10))  # Random delay
+    return(result)
+})
 
+test = lapply(names(teams), function(name){
+  tibble(league_url = name, team_url = teams[name])
+}) %>% bind_rows()
 
-# need to figure out a way to process this 
-# in batches to avoid HTTP Status Code 503 (service unavailabe)
-sapply(league_metadata$leagues, function(league_url){ league_url })
+test = test %>% unnest_longer(2)
+
+division_data = sapply(test$league_url, function(item){ 
+    item %>% 
+    str_remove("https://www.espn.com/soccer/teams/_/league/") %>%
+    str_extract("^[^/]+")
+    # %>% str_split("\\.") 
+  }) %>% tibble()
+
+all_metadata = tibble(test, division_data)
+colnames(all_metadata)[3] = "division"
+
+# add new columns
+all_metadata$league_name = all_metadata$league_url %>% str_extract("[^/]+$") %>% str_replace_all("-", " ")
+all_metadata$team_id  = all_metadata$team_url %>% str_extract("\\d+")
+all_metadata$team_name = all_metadata$team_url %>% str_extract("[^/]+$") %>% str_replace_all("-", " ")
+all_metadata$country_code = all_metadata$division %>% str_extract("\\w+")
+all_metadata$country_name = countrycode(all_metadata$country_code, origin = 'iso3c', "country.name")
+
+# filter all_metadata
+domestic_leagues = all_metadata %>% filter(!is.na(team_id)) %>% filter(nchar(country_code) <= 3)
+domestic_leagues$league_name %>% unique()
+domestic_leagues$country_code %>% unique() %>% tolower()
+
+####################################################################
+
+# construct url for squad list
+squads = sapply(domestic_leagues$team_url, function(item){
+  sub("team", "team/squad", item)
+}) %>% tibble()
+colnames(squads) = "squad_url"
+
+# get years for all squads
+squads_for_each_season = lapply(squads$squad_url, function(url) {
+  result = squad_scraper(url)
+  Sys.sleep(runif(1, min = 3, max = 10))  # Random delay
+  return(result)
+})
 
 
 
