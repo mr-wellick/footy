@@ -5,6 +5,9 @@ library(stringr)
 library(tidyr)
 library(countrycode)
 library(httr)
+library(tidyverse)
+library(purrr)
+library(vctrs)
 
 # urls
 base_url = "https://www.espn.com"
@@ -86,7 +89,7 @@ all_metadata$country_code = all_metadata$division %>% str_extract("\\w+")
 all_metadata$country_name = countrycode(all_metadata$country_code, origin = 'iso3c', "country.name")
 
 # filter all_metadata
-domestic_leagues = all_metadata %>% filter(!is.na(team_id)) %>% filter(nchar(country_code) <= 3)
+domestic_leagues = all_metadata %>% filter(!is.na(team_id)) %>% filter(nchar(division) <= 5)
 domestic_leagues$league_name %>% unique()
 domestic_leagues$country_code %>% unique() %>% tolower()
 
@@ -99,11 +102,64 @@ squads = sapply(domestic_leagues$team_url, function(item){
 colnames(squads) = "squad_url"
 
 # get years for all squads
-squads_for_each_season = lapply(squads$squad_url, function(url) {
+squads_for_each_season = sapply(squads$squad_url %>% unique(), function(url) {
   result = squad_scraper(url)
   Sys.sleep(runif(1, min = 3, max = 10))  # Random delay
   return(result)
 })
 
+####################################################################
 
+# get all squads for all available seasons for each team
+season_yrs = squads_for_each_season %>% tibble() 
+season_yrs$url = names(squads_for_each_season)
+colnames(season_yrs) = c("year", "url")
 
+season_yrs = unnest_longer(season_yrs, 1)
+season_yrs$full_url = paste(season_yrs$url, season_yrs$year, sep = "/")
+
+####################################################################
+players = sapply(season_yrs$full_url, player_scraper)
+
+# drop items in list that are empty
+players_filtered = list_drop_empty(players)
+
+# convert all columns to character data type
+test_df = map(players_filtered, function(item){ 
+  map(item, function(df) { df %>% discard(~all(is.na(.))) %>% mutate(across(everything(), as.character)) })
+})
+
+# each list item contains two tibbles. combine both tibbles into one
+test_df_fixed = map(test_df, function(tibble_list){ bind_rows(tibble_list) })
+
+# rename columns
+col_names = c(
+  "name", "position", 
+  "age", "height", "weight", 
+  "nationality", "appearances", "substitutions", 
+  "saves", "goals_against", "assists", 
+  "fouls_committed", "fouls_against", "yellow_cards", 
+  "red_cards", "goals", 
+  "shots", "shots_on_target"
+)
+
+test_df_fixed = map(test_df_fixed, function(tibble_list){ 
+  colnames(tibble_list) = col_names
+  return(tibble_list)
+})
+
+# create a single data frame from list
+test_df_fixed = map_df(test_df_fixed, data.frame, .id = 'url')
+
+# create new columns
+test_df_fixed$number = test_df_fixed$name %>% str_extract("\\d+")
+test_df_fixed$full_name = test_df_fixed$name %>% str_extract_all("[A-Za-z]+") %>% map_chr(~str_c(., collapse = " "))
+
+# create more columns
+team_info_regex = "https://www\\.espn\\.com/soccer/team/squad/_/id/\\d+/([^/]+)/([0-9]{4})"
+team_col = test_df_fixed$url %>% str_match(team_info_regex)
+
+test_df_fixed$team_name = team_col[,2]
+test_df_fixed$seasom = team_col[,3] %>% as.numeric()
+
+test_df_fixed = test_df_fixed %>% mutate(year_range = paste(seasom, seasom + 1, sep = "-"))
