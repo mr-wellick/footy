@@ -75,3 +75,15 @@ create table if not exists player_statistics(
 -- create matches table
 -- create teams_statistics table
 
+/*
+
+	- finished creating tables
+	- simplify names
+	- review relations before creating them
+*/
+
+
+
+
+
+
