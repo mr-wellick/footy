@@ -9,8 +9,10 @@ import Layout from "./views/layout";
 const app = new Hono();
 const port = 3000;
 
+// static files
 app.use("/src/public/*", serveStatic({ root: "./" }));
 
+// routes
 app.get("/", (c) => c.html(html`<!DOCTYPE html>${(<Layout />)}`));
 app.route("api/v1/leagues", leagues);
 app.route("api/v1/teams", teams);
@@ -21,3 +23,5 @@ serve({
   fetch: app.fetch,
   port,
 });
+
+export default app;
