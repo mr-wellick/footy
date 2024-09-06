@@ -39,6 +39,7 @@ create table if not exists teams(
 -- 	team_league_id uuid references leagues(league_id) not null,
 	team_league_id uuid not null
 )
+select * from teams;
 
 -- create player statistics table
 create table if not exists player_statistics(

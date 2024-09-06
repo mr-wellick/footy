@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "tsx watch src/index.tsx",
     "build:css": "npx tailwindcss -i ./src/public/input.css -o ./src/public/output.css",
-    "test": "node --import tsx --test src/**/*.test.ts"
+    "test": "node --import tsx --test --watch src/**/*.test.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.12.1",
