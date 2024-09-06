@@ -1,6 +1,6 @@
 import type { FC } from "hono/jsx";
-import Navbar from "../components/navbar";
-import Leagues from "../services/leagues/view";
+import Navbar from "./components/navbar";
+import Leagues from "./components/leagues";
 
 const Layout: FC = () => {
   return (
