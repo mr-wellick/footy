@@ -29,7 +29,7 @@ app.post(
         .refine((value) => value === "application/x-www-form-urlencoded", {
           message: "Content-Type must be application/x-www-form-urlencoded",
         }),
-    }),
+    })
   ),
   async (c) => {
     let result: teams[] = [];
@@ -44,7 +44,7 @@ app.post(
     }
 
     return c.html(<View teams={result} />);
-  },
+  }
 );
 
 export default app;

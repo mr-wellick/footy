@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import test, { describe, it } from "node:test";
 import app from "../../index";
 import assert from "node:assert";
 
@@ -17,10 +17,13 @@ describe("teams controller", async () => {
     assert.strictEqual(200, res.status);
   });
 
-  it("404", { todo: "need htmx views for error handling" }, async () => {});
   it("404 status code: returns a zod error object", async () => {
     const res = await app.request("/api/v1/teams");
 
     assert.strictEqual(404, res.status);
   });
+});
+
+test("Error handling for teams", {
+  todo: "need htmx views for error handling",
 });
