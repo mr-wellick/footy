@@ -163,3 +163,5 @@ test_df_fixed$team_name = team_col[,2]
 test_df_fixed$seasom = team_col[,3] %>% as.numeric()
 
 test_df_fixed = test_df_fixed %>% mutate(year_range = paste(seasom, seasom + 1, sep = "-"))
+# create cols: start_year and end_year
+#test_df_fixed$year_range %>% str_match("(\\d{4})-(\\d{4})")
