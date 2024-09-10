@@ -18,15 +18,15 @@ cn = dbConnect(
 )
 
 # inspect db tables
-dbListTables(cn)
-dbReadTable(cn, "countries") %>% tibble()
-
-####### seed countries table
-dbAppendTable(
-  cn, 
-  'countries',
-  domestic_leagues %>% select(country_code, country_name) %>% unique()
-)
+#dbListTables(cn)
+#dbReadTable(cn, "countries") %>% tibble()
+#
+######## seed countries table
+#dbAppendTable(
+#  cn, 
+#  'countries',
+#  domestic_leagues %>% select(country_code, country_name) %>% unique()
+#)
 
 ####### reseed: countries
 
@@ -64,29 +64,32 @@ dbAppendTable(
 #   - For example, Germany has two country codes: GER and DEU.
 #
 # To fix, we add both values into countries database since the table is small
-missing_countries_in_db = setdiff(
-  domestic_leagues %>% select(country_code, country_name) %>% unique(),
-  dbReadTable(cn, "countries") %>% select(country_code, country_name)
-)
 
-missing_countries_mapping = tibble(
-  country_code = c("ENG", "GER", "NED", "POR", "KSA", "SCO", "GRE", "SUI", "DEN", 
-                   "WAL", "NIR", "CHI", "URU", "PAR", "HON", "CRC", "GUA", "RSA", "ZAM", "ZIM"),
-  country_name = c("England", "Germany", "Netherlands", "Portugal", "Saudi Arabia", 
-                          "Scotland", "Greece", "Switzerland", "Denmark", "Wales", 
-                          "Northern Ireland", "Chile", "Uruguay", "Paraguay", "Honduras", "Costa Rica", 
-                          "Guatemala", "South Africa", "Zambia", "Zimbabwe")
-)
+# SKIP THIS STEP FOR NOW
 
-dbAppendTable(
-  cn,
-  "countries",
-  missing_countries_in_db %>% 
-    left_join(missing_countries_mapping, by = "country_code") %>% 
-    rename(country_name = country_name.y) %>% 
-    select(country_code, country_name) %>% 
-    filter(!is.na(country_name))
-)
+#missing_countries_in_db = setdiff(
+#  domestic_leagues %>% select(country_code, country_name) %>% unique(),
+#  dbReadTable(cn, "countries") %>% select(country_code, country_name)
+#)
+#
+#missing_countries_mapping = tibble(
+#  country_code = c("ENG", "GER", "NED", "POR", "KSA", "SCO", "GRE", "SUI", "DEN", 
+#                   "WAL", "NIR", "CHI", "URU", "PAR", "HON", "CRC", "GUA", "RSA", "ZAM", "ZIM"),
+#  country_name = c("England", "Germany", "Netherlands", "Portugal", "Saudi Arabia", 
+#                          "Scotland", "Greece", "Switzerland", "Denmark", "Wales", 
+#                          "Northern Ireland", "Chile", "Uruguay", "Paraguay", "Honduras", "Costa Rica", 
+#                          "Guatemala", "South Africa", "Zambia", "Zimbabwe")
+#)
+#
+#dbAppendTable(
+#  cn,
+#  "countries",
+#  missing_countries_in_db %>% 
+#    left_join(missing_countries_mapping, by = "country_code") %>% 
+#    rename(country_name = country_name.y) %>% 
+#    select(country_code, country_name) %>% 
+#    filter(!is.na(country_name))
+#)
 
 # seed leagues table
 
@@ -97,7 +100,7 @@ data_for_leagues_table_in_db = pmap(
   # get unique league names
   domestic_leagues %>% select(league_name, country_code, division) %>% unique(), 
   function(league_name, country_code, division) { 
-    temp = dbGetQuery(cn, str_glue("select * from countries where country_code='{country_code}'"))
+    temp = dbGetQuery(cn, str_glue("select * from countries where country_code like '%{country_code}%'"))
     tryCatch({
       temp$league_name = league_name
       temp$division = division
@@ -106,18 +109,36 @@ data_for_leagues_table_in_db = pmap(
     }, error = function(e){
       message("issue with following country_code: ", country_code)
       
-      return(data.frame(country_id = NA, country_code, country_name = NA, division))
+      return(data.frame(country_id = NA, country_code, country_name = NA, league_name ,division))
     })
 }) %>% bind_rows() %>% tibble()
 
-# check for any missing data
-data_for_leagues_table_in_db[!complete.cases(data_for_leagues_table_in_db), ]
+# the following leagues were not inserted into db
+missing_country_name = data_for_leagues_table_in_db %>% filter(is.na(country_name))
+
+# SKIP THIS STEP FOR NOW
+#missing_leagues_for_tabl_in_db = pmap(
+#  missing_country_name %>% select(league_name, country_code, division), 
+#  function(league_name, country_code, division){
+#    tryCatch({
+#      temp = dbGetQuery(cn, str_glue("select * from countries where country_name ilike '{country_code}%' or country_code ilike '{country_code}%'"))
+#      temp$league_name = league_name
+#      temp$division = division
+#      return(temp)
+#    }, error = function(e){
+#      message("issue with following country_code: ", country_code)
+#      
+#      return(data.frame(country_id = NA, country_code, country_name = NA, league_name ,division))
+#    })
+#  
+#}) %>% bind_rows() %>% tibble()
+
 
 # seed leagues table
 dbAppendTable(
   cn,
   "leagues",
-  data_for_leagues_table_in_db %>% select(league_name, country_id, division)
+  data_for_leagues_table_in_db %>% filter(!is.na(country_name)) %>% select(league_name, country_id, division) 
 )
 
 ####### seed seasons table
@@ -179,11 +200,13 @@ players_test = pmap(
   }
 )
 
-players_test = players_test %>% bind_rows() %>% distinct(name, .keep_all = T)
+players_test = players_test %>% 
+  bind_rows() %>% 
+  mutate(height_cm = as.numeric(height_cm), weight_kg = as.numeric(weight_kg)) %>% 
+  mutate(height_cm = round(height_cm, 2), weight_kg = round(weight_kg, 2))
 
- setdiff(
-     (players_data_for_table_in_db[,-c(4,5)])$full_name %>% unique(),
-     (players_test %>% bind_rows())$name %>% unique()
- )
-
-# todo: figure out why some players are being dropped from final results
+dbAppendTable(
+  cn,
+  "players",
+  players_test
+)

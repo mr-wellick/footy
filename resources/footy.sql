@@ -29,7 +29,7 @@ create table if not exists seasons(
 	end_year int check (end_year > start_year) not null
 );
 
--- create players table
+-- create players table (seeded)
 drop table if exists players cascade;
 create table if not exists players(
 	player_id uuid default gen_random_uuid() primary key,
@@ -120,6 +120,19 @@ drop column nationality;
 
 alter table players
 add column country_id uuid not null references countries(country_id);
+
+-- drop height_cm and re-add col with new data type
+alter table players
+drop column height_cm;
+
+alter table players
+add column height_cm numeric(5,2);
+
+alter table players
+drop column weight_kg;
+
+alter table players
+add column weight_kg numeric(5,2);
 
 -- create teams_statistics table: (dont have data for this table, will wait on creating)
 -- create table if not exists team_statistics()
