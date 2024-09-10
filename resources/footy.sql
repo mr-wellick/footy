@@ -134,6 +134,16 @@ drop column weight_kg;
 alter table players
 add column weight_kg numeric(5,2);
 
+-- test queries after running sql above
+select players.name, 
+       players.position, 
+       players.height_cm, 
+       players.weight_kg, 
+       countries.*
+from players
+join countries on players.country_id = countries.country_id
+where players.name like 'Lionel Messi'
+
 -- create teams_statistics table: (dont have data for this table, will wait on creating)
 -- create table if not exists team_statistics()
 
