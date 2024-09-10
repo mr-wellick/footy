@@ -8,19 +8,25 @@ datasource db {
 }
 
 model countries {
-  country_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  country_code String @unique @db.VarChar(3)
-  country_name String @unique @db.VarChar(100)
+  country_id   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  country_code String    @unique @db.VarChar(10)
+  country_name String?   @db.VarChar(100)
+  leagues      leagues[]
+  players      players[]
 }
 
 model leagues {
-  league_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  league_name String @db.VarChar(100)
-  country_id  String @db.Uuid
+  league_id   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  league_name String    @unique(map: "unique_league_name") @db.VarChar(100)
+  country_id  String    @db.Uuid
+  division    String    @db.VarChar(100)
+  countries   countries @relation(fields: [country_id], references: [country_id], onDelete: NoAction, onUpdate: NoAction)
+  matches     matches[]
+  teams       teams[]
 }
 
 model player_statistics {
-  player_statistic_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  player_statistic_id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   saves               Int?
   goals_against       Int?
   goals               Int?
@@ -33,29 +39,56 @@ model player_statistics {
   red_cards           Int?
   substitutions       Int?
   appearances         Int?
-  player              String @db.Uuid
-  team_id             String @db.Uuid
-  season_id           String @db.Uuid
+  player_id           String  @unique @db.Uuid
+  team_id             String  @db.Uuid
+  season_id           String  @db.Uuid
+  players             players @relation(fields: [player_id], references: [player_id], onDelete: NoAction, onUpdate: NoAction)
+  seasons             seasons @relation(fields: [season_id], references: [season_id], onDelete: NoAction, onUpdate: NoAction)
+  teams               teams   @relation(fields: [team_id], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model players {
-  player_id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  player_name        String  @db.VarChar(100)
-  player_nationality String  @db.VarChar(50)
-  player_position    String  @db.VarChar(5)
-  player_height_cm   Int
-  player_weight_kg   Decimal @db.Decimal(5, 2)
+  player_id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String             @db.VarChar(100)
+  position          String             @db.VarChar(5)
+  country_id        String             @db.Uuid
+  height_cm         Decimal?           @db.Decimal(5, 2)
+  weight_kg         Decimal?           @db.Decimal(5, 2)
+  player_statistics player_statistics?
+  countries         countries          @relation(fields: [country_id], references: [country_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model seasons {
-  season_id  String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  start_year Int
-  end_year   Int
+  season_id         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  start_year        Int
+  end_year          Int
+  years_interval    String              @unique @db.VarChar(50)
+  matches           matches[]
+  player_statistics player_statistics[]
 }
 
 model teams {
-  team_id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  team_name      String @db.VarChar(100)
-  team_league_id String @db.Uuid
+  team_id                          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                             String              @db.VarChar(100)
+  league_id                        String              @db.Uuid
+  matches_matches_away_teamToteams matches[]           @relation("matches_away_teamToteams")
+  matches_matches_home_teamToteams matches[]           @relation("matches_home_teamToteams")
+  player_statistics                player_statistics[]
+  leagues                          leagues             @relation(fields: [league_id], references: [league_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model matches {
+  match_id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  match_date                     DateTime @default(now()) @db.Timestamptz(6)
+  home_score                     Int
+  away_score                     Int
+  home_team                      String   @db.Uuid
+  away_team                      String   @db.Uuid
+  league_id                      String   @db.Uuid
+  season_id                      String   @db.Uuid
+  teams_matches_away_teamToteams teams    @relation("matches_away_teamToteams", fields: [away_team], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
+  teams_matches_home_teamToteams teams    @relation("matches_home_teamToteams", fields: [home_team], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
+  leagues                        leagues  @relation(fields: [league_id], references: [league_id], onDelete: NoAction, onUpdate: NoAction)
+  seasons                        seasons  @relation(fields: [season_id], references: [season_id], onDelete: NoAction, onUpdate: NoAction)
 }
