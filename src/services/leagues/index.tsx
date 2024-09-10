@@ -5,7 +5,7 @@ import { FC } from "hono/jsx";
 
 const app = new Hono();
 
-const View: FC<{ leagues: leagues[] }> = (props) => {
+export const View: FC<{ leagues: leagues[] }> = (props) => {
   return (
     <>
       <select
