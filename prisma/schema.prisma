@@ -25,6 +25,21 @@ model leagues {
   teams       teams[]
 }
 
+model matches {
+  match_id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  match_date                     DateTime @default(now()) @db.Timestamptz(6)
+  home_score                     Int
+  away_score                     Int
+  home_team                      String   @db.Uuid
+  away_team                      String   @db.Uuid
+  league_id                      String   @db.Uuid
+  season_id                      String   @db.Uuid
+  teams_matches_away_teamToteams teams    @relation("matches_away_teamToteams", fields: [away_team], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
+  teams_matches_home_teamToteams teams    @relation("matches_home_teamToteams", fields: [home_team], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
+  leagues                        leagues  @relation(fields: [league_id], references: [league_id], onDelete: NoAction, onUpdate: NoAction)
+  seasons                        seasons  @relation(fields: [season_id], references: [season_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
 model player_statistics {
   player_statistic_id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   saves               Int?
@@ -76,19 +91,4 @@ model teams {
   matches_matches_home_teamToteams matches[]           @relation("matches_home_teamToteams")
   player_statistics                player_statistics[]
   leagues                          leagues             @relation(fields: [league_id], references: [league_id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model matches {
-  match_id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  match_date                     DateTime @default(now()) @db.Timestamptz(6)
-  home_score                     Int
-  away_score                     Int
-  home_team                      String   @db.Uuid
-  away_team                      String   @db.Uuid
-  league_id                      String   @db.Uuid
-  season_id                      String   @db.Uuid
-  teams_matches_away_teamToteams teams    @relation("matches_away_teamToteams", fields: [away_team], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
-  teams_matches_home_teamToteams teams    @relation("matches_home_teamToteams", fields: [home_team], references: [team_id], onDelete: NoAction, onUpdate: NoAction)
-  leagues                        leagues  @relation(fields: [league_id], references: [league_id], onDelete: NoAction, onUpdate: NoAction)
-  seasons                        seasons  @relation(fields: [season_id], references: [season_id], onDelete: NoAction, onUpdate: NoAction)
 }

@@ -13,7 +13,7 @@ const View: FC<{ teams: teams[] }> = ({ teams }) => {
   return (
     <ul>
       {teams.map((team) => (
-        <li>{team.team_name}</li>
+        <li>{team.name}</li>
       ))}
     </ul>
   );
@@ -36,7 +36,7 @@ app.post(
     try {
       const form = await c.req.formData();
       result = await prisma.teams.findMany({
-        where: { team_league_id: form.get("team_league_id") as string },
+        where: { league_id : form.get("league_id") as string },
       });
     } catch (error) {
       console.log(error);

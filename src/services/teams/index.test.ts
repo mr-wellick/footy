@@ -7,7 +7,7 @@ describe("teams controller", async () => {
     const res = await app.request("/api/v1/teams", {
       method: "POST",
       body: new URLSearchParams({
-        team_league_id: "21aa9188-2956-4947-81d3-bf855b53136c",
+        league_id: "21aa9188-2956-4947-81d3-bf855b53136c",
       }).toString(),
       headers: new Headers({
         "Content-Type": "application/x-www-form-urlencoded",
