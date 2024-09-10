@@ -27,6 +27,11 @@ export const View: FC<{ leagues: leagues[] }> = (props) => {
   );
 };
 
+// not sure how to test/handle error view in htmx
+export const ErrorView: FC = () => {
+  return <p>Looks like something went wrong.</p>;
+};
+
 app.get("/", async (c) => {
   let result: leagues[] = [];
 
@@ -34,10 +39,10 @@ app.get("/", async (c) => {
     result = await prisma.leagues.findMany();
   } catch (error) {
     console.error(error);
-    return c.json({ message: "something went wrong" }, 500);
+    return c.html(<ErrorView />);
   }
 
-  return c.html(<View leagues={result} />);
+  return c.html(<View leagues={result} />, 200);
 });
 
 export default app;
