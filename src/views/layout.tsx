@@ -20,6 +20,7 @@ const Layout: FC = () => {
         integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
         crossorigin="anonymous"
       ></script>
+      <script src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"></script>
     </html>
   );
 };

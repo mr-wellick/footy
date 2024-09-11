@@ -16,4 +16,6 @@ open http://localhost:3000
 
 # HTMX
 
-- Handling server errors: https://stackoverflow.com/questions/69364278/handle-errors-with-htmx
+- Handling server errors: 
+    1. https://stackoverflow.com/questions/69364278/handle-errors-with-htmx
+    2. https://github.com/bigskysoftware/htmx-extensions/blob/main/src/response-targets/README.md

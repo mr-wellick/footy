@@ -11,7 +11,7 @@ export const View: FC<{ leagues: leagues[] }> = (props) => {
       <select
         className="select select-accent w-full max-w-xs"
         hx-post="/api/v1/teams"
-        hx-target="#results"
+        hx-target="#teams-result"
         hx-triggrer="change"
         name="league_id"
       >
@@ -22,14 +22,14 @@ export const View: FC<{ leagues: leagues[] }> = (props) => {
           return <option value={league.league_id}>{league.league_name}</option>;
         })}
       </select>
-      <div className="mt-5 flex" id="results"></div>
+      <div className="mt-5 flex" id="teams-result"></div>
     </>
   );
 };
 
-// not sure how to test/handle error view in htmx
-export const ErrorView: FC = () => {
-  return <p>Looks like something went wrong.</p>;
+export const ErrorView: FC<{ message: string }> = (props) => {
+  console.log(props.message);
+  return <p>Unable to retrive data for league. Please try again.</p>;
 };
 
 app.get("/", async (c) => {
@@ -39,7 +39,7 @@ app.get("/", async (c) => {
     result = await prisma.leagues.findMany();
   } catch (error) {
     console.error(error);
-    return c.html(<ErrorView />);
+    return c.html(<ErrorView message="something went wrong" />);
   }
 
   return c.html(<View leagues={result} />, 200);
