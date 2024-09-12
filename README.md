@@ -24,3 +24,5 @@ open http://localhost:3000
 
 - https://swagger.io/docs/specification/about/
 - https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#openapi-document
+
+- form data: https://swagger.io/docs/specification/describing-request-body/

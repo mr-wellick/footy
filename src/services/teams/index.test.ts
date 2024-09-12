@@ -1,4 +1,4 @@
-import test, { describe, it } from "node:test";
+import { describe, it } from "node:test";
 import app from "../../index";
 import assert from "node:assert";
 
@@ -7,7 +7,7 @@ describe("teams controller", async () => {
     const res = await app.request("/api/v1/teams", {
       method: "POST",
       body: new URLSearchParams({
-        league_id: "21aa9188-2956-4947-81d3-bf855b53136c",
+        league_id: "81fd5d4e-d500-413f-881d-6ec5cd2d5222",
       }).toString(),
       headers: new Headers({
         "Content-Type": "application/x-www-form-urlencoded",
@@ -22,8 +22,8 @@ describe("teams controller", async () => {
 
     assert.strictEqual(404, res.status);
   });
-});
 
-test("Error handling for teams", {
-  todo: "need htmx views for error handling",
+  it("500 status code: returns an error view when db query fails", {
+    todo: true,
+  });
 });
