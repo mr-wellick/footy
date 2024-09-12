@@ -19,3 +19,8 @@ open http://localhost:3000
 - Handling server errors: 
     1. https://stackoverflow.com/questions/69364278/handle-errors-with-htmx
     2. https://github.com/bigskysoftware/htmx-extensions/blob/main/src/response-targets/README.md
+
+# Swagger
+
+- https://swagger.io/docs/specification/about/
+- https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#openapi-document
