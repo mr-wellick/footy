@@ -42,7 +42,7 @@ create table if not exists players(
 	nationality varchar(50) not null,
 );
 
--- create teams table
+-- create teams table (seeded)
 drop table if exists teams cascade;
 create table if not exists teams(
 	team_id uuid default gen_random_uuid() primary key,

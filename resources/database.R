@@ -210,3 +210,58 @@ dbAppendTable(
   "players",
   players_test
 )
+
+####### seed teams table
+dbReadTable(cn, "teams")
+
+teams_table = pmap(domestic_leagues %>% select(division, team_name), function(division, team_name){
+  tryCatch({
+    temp = dbGetQuery(cn, str_glue("select league_id, division from leagues where division = '{division}'"))
+    return(tibble(team_name, temp$league_id))
+  }, error = function(e){
+    message('error', e)
+  })
+  
+  return(NA)
+}) %>% bind_rows()
+
+colnames(teams_table) = c('name', "league_id")
+dbAppendTable(cn, 'teams', teams_table)
+
+####### seed player stats table
+dbReadTable(cn, "player_statistics")
+
+# note: column country_code is wrong
+player_stats_table = pmap(
+  test_df_fixed %>% 
+    select(saves, goals_against, goals, 
+           assists, shots, shots_on_target, 
+           fouls_committed, fouls_against, 
+           yellow_cards, red_cards, substitutions, 
+           appearances, full_name, team_name, year_range) %>% mutate(team_name = str_replace(team_name, '-', ' ')),
+  function(saves, goals_against, goals, 
+           assists, shots, shots_on_target, 
+           fouls_committed, fouls_against, 
+           yellow_cards, red_cards, substitutions, 
+           appearances, full_name, team_name, year_range){
+    tryCatch({
+      p_id = dbGetQuery(cn, str_glue("select player_id from players where lower(name) = lower('{full_name}')"))
+      t_id = dbGetQuery(cn, str_glue("select team_id from teams where name ilike '{team_name}'"))
+      y_id = dbGetQuery(cn, str_glue("select season_id from seasons where years_interval = '{year_range}'"))
+      
+      return(tibble(saves, goals_against, goals, 
+                    assists, shots, shots_on_target, 
+                    fouls_committed, fouls_against, 
+                    yellow_cards, red_cards, substitutions, 
+                    appearances, player_id = p_id$player_id, team_id = t_id$team_id, season_id = y_id$season_id))
+    }, error = function(e){
+      message('error trieving: ', full_name, team_name, year_range ,'\n')
+      message('message: ', e)
+    })
+    
+    return(NA)
+  }
+)
+
+
+
