@@ -13,6 +13,7 @@ export const View: FC<{ leagues: leagues[] }> = (props) => {
         hx-post="/api/v1/teams"
         hx-target="#teams-result"
         hx-triggrer="change"
+        hx-target-error="#teams-result"
         name="league_id"
       >
         <option disabled selected>

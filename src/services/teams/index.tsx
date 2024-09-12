@@ -37,6 +37,7 @@ app.post(
   ),
   async (c) => {
     let result: teams[] = [];
+
     try {
       const form = await c.req.formData();
       result = await prisma.teams.findMany({
