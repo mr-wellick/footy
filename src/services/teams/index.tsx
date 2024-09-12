@@ -11,11 +11,17 @@ const View: FC<{ teams: teams[] }> = ({ teams }) => {
   if (teams.length <= 0) return <p>No teams for selected leagues</p>;
 
   return (
-    <ul>
-      {teams.map((team) => (
-        <li>{team.name}</li>
-      ))}
-    </ul>
+    <>
+      <select className="select select-accent w-full max-w-xs">
+        <option disabled selected>
+          Teams
+        </option>
+        {teams.map((team) => {
+          return <option value={team.league_id}>{team.name}</option>;
+        })}
+      </select>
+      <div className="mt-5 flex" id="teams-result"></div>
+    </>
   );
 };
 

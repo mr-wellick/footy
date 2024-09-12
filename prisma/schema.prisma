@@ -54,7 +54,7 @@ model player_statistics {
   red_cards           Int?
   substitutions       Int?
   appearances         Int?
-  player_id           String  @unique @db.Uuid
+  player_id           String  @db.Uuid
   team_id             String  @db.Uuid
   season_id           String  @db.Uuid
   players             players @relation(fields: [player_id], references: [player_id], onDelete: NoAction, onUpdate: NoAction)
@@ -63,14 +63,14 @@ model player_statistics {
 }
 
 model players {
-  player_id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name              String             @db.VarChar(100)
-  position          String             @db.VarChar(5)
-  country_id        String             @db.Uuid
-  height_cm         Decimal?           @db.Decimal(5, 2)
-  weight_kg         Decimal?           @db.Decimal(5, 2)
-  player_statistics player_statistics?
-  countries         countries          @relation(fields: [country_id], references: [country_id], onDelete: NoAction, onUpdate: NoAction)
+  player_id         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String              @db.VarChar(100)
+  position          String              @db.VarChar(5)
+  country_id        String              @db.Uuid
+  height_cm         Decimal?            @db.Decimal(5, 2)
+  weight_kg         Decimal?            @db.Decimal(5, 2)
+  player_statistics player_statistics[]
+  countries         countries           @relation(fields: [country_id], references: [country_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.

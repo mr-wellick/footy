@@ -5,7 +5,7 @@ import { FC } from "hono/jsx";
 
 const app = new Hono();
 
-export const View: FC<{ leagues: leagues[] }> = (props) => {
+export const View: FC<{ leagues: leagues[] }> = ({ leagues }) => {
   return (
     <>
       <select
@@ -19,7 +19,7 @@ export const View: FC<{ leagues: leagues[] }> = (props) => {
         <option disabled selected>
           League
         </option>
-        {props.leagues.map((league) => {
+        {leagues.map((league) => {
           return <option value={league.league_id}>{league.league_name}</option>;
         })}
       </select>
