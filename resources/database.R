@@ -263,5 +263,10 @@ player_stats_table = pmap(
   }
 )
 
+player_stats_table %>% discard(~all(is.na(.x))) %>% bind_rows() %>% mutate_all(na_if, '--')
 
+dbAppendTable(
+  cn, "player_statistics", 
+  player_stats_table %>% discard(~all(is.na(.x))) %>% bind_rows() %>% mutate_all(na_if, '--')
+)
 

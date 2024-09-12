@@ -54,7 +54,7 @@ create table if not exists teams(
 drop table if exists player_statistics cascade;
 create table if not exists player_statistics(
 	player_statistic_id uuid default gen_random_uuid() primary key,
-	
+
 	-- 	performance related statistics
     saves int,
     goals_against int,
@@ -62,17 +62,17 @@ create table if not exists player_statistics(
     assists int,
     shots int,
     shots_on_target int,
-	
+
 	-- disciplice related statistics
 	fouls_committed int,
     fouls_against int,
     yellow_cards int,
     red_cards int,
-	
+
 	-- participation related statistics
 	substitutions int,
     appearances int,
-	
+
 	-- foreign keys
  	player_id uuid references players(player_id) unique not null,
  	team_id uuid references teams(team_id) not null,
@@ -93,10 +93,10 @@ create table if not exists matches(
 );
 
 -- updated following constraints after running sql above
-alter table countries 
+alter table countries
 alter column country_name drop not null;
 
-alter table leagues 
+alter table leagues
 add constraint unique_league_name unique(league_name);
 
 alter table leagues
@@ -135,15 +135,22 @@ alter table players
 add column weight_kg numeric(5,2);
 
 -- test queries after running sql above
-select players.name, 
-       players.position, 
-       players.height_cm, 
-       players.weight_kg, 
+select players.name,
+       players.position,
+       players.height_cm,
+       players.weight_kg,
        countries.*
 from players
 join countries on players.country_id = countries.country_id
 where players.name like 'Lionel Messi'
 
+-- drop unique constraint on player_id for player statistics
+select conname from pg_constraint
+where conrelid = 'player_statistics'::regclass
+and contype ='u';
+
+alter table player_statistics
+drop constraint player_statistics_player_id_key;
+
 -- create teams_statistics table: (dont have data for this table, will wait on creating)
 -- create table if not exists team_statistics()
-
