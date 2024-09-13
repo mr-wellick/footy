@@ -40,7 +40,7 @@ app.get("/", async (c) => {
     result = await prisma.leagues.findMany();
   } catch (error) {
     console.error(error);
-    return c.html(<ErrorView message="something went wrong" />);
+    return c.html(<ErrorView message="something went wrong" />, 500);
   }
 
   return c.html(<View leagues={result} />, 200);
