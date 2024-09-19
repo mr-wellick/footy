@@ -1,4 +1,3 @@
-import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { html } from "hono/html";
 import { serveStatic } from "@hono/node-server/serve-static";
@@ -9,7 +8,6 @@ import Layout from "./views/layout";
 import { swaggerDoc } from "../doc/swaggerDoc";
 
 const app = new Hono();
-const port = 3000;
 
 // static files
 app.use("/src/public/*", serveStatic({ root: "./" }));
@@ -22,12 +20,5 @@ app.get("/ui", swaggerUI({ url: "/doc" }));
 app.get("/", (c) => c.html(html`<!doctype html>${(<Layout />)}`));
 app.route("api/v1/leagues", leagues);
 app.route("api/v1/teams", teams);
-
-console.log(`Server is running on port ${port}`);
-
-serve({
-  fetch: app.fetch,
-  port,
-});
 
 export default app;

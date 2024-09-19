@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
 import assert from "node:assert";
-import app from "../../index";
 import prisma from "../../db";
 import sinon from "sinon";
+import app from "../../app";
 
 describe("Successful response", () => {
   it("200 status code: return drop down with all available leagues, if any ", async () => {
