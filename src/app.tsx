@@ -17,7 +17,7 @@ app.use(
   jsxRenderer(
     ({ children }) => {
       return (
-        <html data-theme="cyberpunk">
+        <html>
           <head>
             <meta charset="UTF-8" />
             <meta
@@ -25,15 +25,9 @@ app.use(
               content="width=device-width, initial-scale=1.0"
             />
             <title>Footy</title>
-            <link href="/src/public/output.css" rel="stylesheet" />
+            {/* <link href="/src/public/output.css" rel="stylesheet" /> */}
           </head>
           <body>{children}</body>
-          <script
-            src="https://unpkg.com/htmx.org@1.9.10"
-            integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-            crossorigin="anonymous"
-          ></script>
-          <script src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"></script>
         </html>
       );
     },

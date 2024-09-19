@@ -5,29 +5,6 @@ import { FC } from "hono/jsx";
 
 const app = new Hono();
 
-export const View: FC<{ leagues: leagues[] }> = ({ leagues }) => {
-  return (
-    <>
-      <select
-        className="select select-accent w-full max-w-xs"
-        hx-post="/api/v1/teams"
-        hx-target="#teams-result"
-        hx-triggrer="change"
-        hx-target-error="#teams-result"
-        name="league_id"
-      >
-        <option disabled selected>
-          League
-        </option>
-        {leagues.map((league) => {
-          return <option value={league.league_id}>{league.league_name}</option>;
-        })}
-      </select>
-      <div className="mt-5 flex" id="teams-result"></div>
-    </>
-  );
-};
-
 export const ErrorView: FC<{ message: string }> = (props) => {
   console.log(props.message);
   return <p>Unable to retrive data for league. Please try again.</p>;
@@ -40,10 +17,10 @@ app.get("/", async (c) => {
     result = await prisma.leagues.findMany();
   } catch (error) {
     console.error(error);
-    return c.html(<ErrorView message="something went wrong" />, 500);
+    return c.json({ result, message: "server error" }, 500);
   }
 
-  return c.html(<View leagues={result} />, 200);
+  return c.json(result, 200);
 });
 
 export default app;
