@@ -3,9 +3,9 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { swaggerUI } from "@hono/swagger-ui";
 import leagues from "./services/leagues";
 import teams from "./services/teams";
-import Layout from "./views/layout";
 import { swaggerDoc } from "../doc/swaggerDoc";
 import { jsxRenderer } from "hono/jsx-renderer";
+import Navbar from "./views/components/navbar";
 
 const app = new Hono();
 
@@ -40,8 +40,8 @@ app.use(
     {
       docType:
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
-    },
-  ),
+    }
+  )
 );
 
 // api documentation
@@ -49,7 +49,13 @@ app.get("/doc", (c) => c.json(swaggerDoc));
 app.get("/ui", swaggerUI({ url: "/doc" }));
 
 // routes
-app.get("/", (c) => c.render(<Layout />));
+app.get("/", (c) =>
+  c.render(
+    <>
+      <Navbar />
+    </>
+  )
+);
 app.route("api/v1/leagues", leagues);
 app.route("api/v1/teams", teams);
 
