@@ -17,7 +17,7 @@ app.get("/", async (c) => {
     result = await prisma.leagues.findMany();
   } catch (error) {
     console.error(error);
-    return c.json({ result, message: "server error" }, 500);
+    return c.json(result, 500);
   }
 
   return c.json(result, 200);
