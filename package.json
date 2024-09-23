@@ -1,9 +1,12 @@
 {
   "name": "footy",
+  "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.tsx",
-    "build:css": "npx tailwindcss -i ./src/public/input.css -o ./src/public/output.css",
-    "test": "node --import tsx --test --watch 'src/**/*.test.ts'"
+    "serve": "vite",
+    "build:css": "npx tailwindcss -i ./src/public/input.css -o ./src/public/output.css --watch",
+    "ui:build": "vite build --watch",
+    "dev":"concurrently \"npm run serve\" \"npm run build:css\" \"npm run ui:build\"",
+    "test": "node --import tsx --test --watch \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@hono/node-server": "^1.12.2",
@@ -15,10 +18,11 @@
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
-    "@types/sinon": "^17.0.3",
+    "concurrently": "^9.0.1",
     "daisyui": "^4.12.10",
     "prisma": "^5.19.1",
     "tailwindcss": "^3.4.11",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "vite": "^5.4.6"
   }
 }
