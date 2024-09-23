@@ -1,5 +1,6 @@
 {
   "name": "footy",
+  "type": "module",
   "scripts": {
     "serve": "vite",
     "build:css": "npx tailwindcss -i ./src/public/input.css -o ./src/public/output.css --watch",
