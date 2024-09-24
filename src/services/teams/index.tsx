@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import prisma from "../../db";
+import prisma from "../../libs/prisma";
 import { teams } from "@prisma/client";
 import { FC } from "hono/jsx";
 import { zValidator } from "@hono/zod-validator";
@@ -39,7 +39,7 @@ app.post(
         .refine((value) => value === "application/x-www-form-urlencoded", {
           message: "Content-Type must be application/x-www-form-urlencoded",
         }),
-    }),
+    })
   ),
   async (c) => {
     let result: teams[] = [];
@@ -55,7 +55,7 @@ app.post(
     }
 
     return c.html(<View teams={result} />);
-  },
+  }
 );
 
 export default app;

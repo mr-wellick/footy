@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import prisma from "../../db";
+import prisma from "../../libs/prisma";
 import { leagues } from "@prisma/client";
 import { FC } from "hono/jsx";
 
