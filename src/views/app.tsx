@@ -60,6 +60,10 @@ const Footer: FC = () => {
 };
 
 const App: FC = () => {
+  fetch("http://localhost:3000/api/v1/leagues")
+    .then((res) => res.json())
+    .then(console.log);
+
   return (
     <>
       <Navbar />

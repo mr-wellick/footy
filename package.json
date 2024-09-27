@@ -2,11 +2,11 @@
   "name": "footy",
   "type": "module",
   "scripts": {
-    "build:css": "npx tailwindcss -i ./src/public/input.css -o ./src/public/output.css --watch",
+    "css:build": "npx tailwindcss -i ./src/public/input.css -o ./src/public/output.css --watch",
     "ui:build": "vite build --watch",
-    "ui:dev": "vite",
+    "client": "vite",
     "serve": "npx tsx watch src/server.tsx",
-    "dev": "concurrently \"npm run build:css\" \"npm run ui:build\" \"npm run serve\"",
+    "dev": "concurrently \"npm run css:build\" \"npm run ui:build\" \"npm run client\" \"npm run serve\"",
     "test": "vitest"
   },
   "dependencies": {
