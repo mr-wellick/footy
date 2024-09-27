@@ -1,4 +1,4 @@
-import { FC } from "hono/jsx";
+import { FC, useEffect, useState } from "hono/jsx";
 
 const DataFilter: FC = () => {
   return (
@@ -43,12 +43,47 @@ const DataFilter: FC = () => {
   );
 };
 
+const Leagues: FC = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/v1/leagues")
+      .then((res) => res.json())
+      .then((data) => setData(data))
+      .catch((error) => console.log(error));
+  }, [data]);
+
+  return (
+    <select
+      className="select select-primary w-full max-w-xs"
+      onChange={(e) => {
+        fetch("http://localhost:3000/api/v1/teams", {
+          method: "POST",
+          body: JSON.stringify({
+            league_id: e.target.value,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => console.log(data))
+          .catch((error) => console.log(error));
+      }}
+    >
+      <option disabled selected>
+        choose a league
+      </option>
+      {data.map((league) => {
+        return <option value={league.league_id}>{league.league_name}</option>;
+      })}
+    </select>
+  );
+};
+
 const Hero: FC = () => {
   return (
     <div className="flex">
-      <DataFilter />
       <div className="hero bg-base-200 min-h-screen">
         <div className="hero-content">
+          <Leagues />
           <div>
             <h1 className="text-5xl font-bold">Box Office News!</h1>
             <p className="py-6">
